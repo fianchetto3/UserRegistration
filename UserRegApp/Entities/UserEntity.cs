@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace UserRegApp.Entities;
@@ -27,7 +28,7 @@ public class UserEntity
 public class UserAuthEntity
 {
     [Key]
-    public int UserId { get; set; }
+    public Guid Id { get; set; }
 
 
     [Required]
@@ -62,9 +63,9 @@ public class ProfileEntity
 {
     [Key]
     
-    public int Id { get; set; }
+    public Guid Id { get; set; }
 
-    [Required]
+    [ForeignKey(nameof(RoleEntity))]
     public int RoleId { get; set; }
     
 
@@ -76,17 +77,23 @@ public class ProfileEntity
     [StringLength(100)]
     public string LastName { get; set; } = null!;
 
+    public virtual RoleEntity Role { get; set; } = null!;
+    
 }
 
 
 public class RoleEntity
 {
+    [Key]
+   
     public int Id { get; set;}
 
     [Required]
     [StringLength(50)]
     public string RoleName { get; set; } = null!;
-  
+
+    public virtual ICollection<ProfileEntity> Profiles { get; set; } = new HashSet<ProfileEntity>();
+
 }
 
 
