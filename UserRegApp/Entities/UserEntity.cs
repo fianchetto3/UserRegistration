@@ -19,21 +19,35 @@ public class UserEntity
     public string Phone { get; set; } = null!;
 
     [Required]
-   
-    public int AddressId { get; set; } 
+    [ForeignKey(nameof(AddressEntity))]
+    public int AddressId { get; set; }
 
+    // Navigation prorperties 
+    public virtual ProfileEntity Profile { get; set; } = null!;  // 1:1
+
+
+    public virtual AddressEntity Address { get; set; } = null!; // n:1 
+
+    public virtual UserAuthEntity UserAuth { get; set; } = null!; // 1:1
+
+    public virtual UserActivityEntity UserActivity { get; set; } = null!; //1:1
 }
 
 
 public class UserAuthEntity
 {
     [Key]
-    public Guid Id { get; set; }
+    [ForeignKey(nameof(UserEntity))]
+    public int Id { get; set; }
 
 
     [Required]
     [Column(TypeName = "varchar(200)")]
     public string Password { get; set; } = null!;
+
+    // navigation Properties 
+
+    public virtual UserEntity User { get; set; } = null!;
 
 }
 
@@ -56,14 +70,18 @@ public class AddressEntity
     [StringLength(100)]
     public string Street { get; set; } = null!;
 
+    // navigation properties 
+
+    public virtual ICollection<UserEntity> Users { get; set; } = new HashSet<UserEntity>(); // n:1
+
 }
 
 
 public class ProfileEntity
 {
     [Key]
-    
-    public Guid Id { get; set; }
+    [ForeignKey(nameof(UserEntity))]
+    public int Id { get; set; }
 
     [ForeignKey(nameof(RoleEntity))]
     public int RoleId { get; set; }
@@ -77,10 +95,12 @@ public class ProfileEntity
     [StringLength(100)]
     public string LastName { get; set; } = null!;
 
-    public virtual RoleEntity Role { get; set; } = null!;
+    // Navigaton properties
+    public virtual RoleEntity Role { get; set; } = null!; // 1:n
+
+    public virtual UserEntity User { get; set;} = null!; // 1:1 
     
 }
-
 
 public class RoleEntity
 {
@@ -92,7 +112,8 @@ public class RoleEntity
     [StringLength(50)]
     public string RoleName { get; set; } = null!;
 
-    public virtual ICollection<ProfileEntity> Profiles { get; set; } = new HashSet<ProfileEntity>();
+    // Navigation Properties
+    public virtual ICollection<ProfileEntity> Profiles { get; set; } = new HashSet<ProfileEntity>();  // 1-N
 
 }
 
@@ -103,11 +124,16 @@ public class UserActivityEntity
     public int Id { get; set; }
 
     [Required]
+    [ForeignKey (nameof(UserEntity))]
     public int UserId { get; set; }
 
   
     [Required]
     [StringLength(100)]
     public DateTime LastLoggedIn { get; set; } 
+
+    //Navigation properites 
+
+    public virtual UserEntity User { get; set; } = null!;
 
 }
