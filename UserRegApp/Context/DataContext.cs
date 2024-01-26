@@ -20,7 +20,7 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // unqiue email&phone
+        // unique email&phone
 
         modelBuilder.Entity<UserEntity>()  
             .HasIndex(x => x.Email)
@@ -38,9 +38,27 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
             .HasForeignKey<ProfileEntity>(p => p.Id);
 
         modelBuilder.Entity<UserEntity>()
-            .HasOne(u => u.UserAuth)
+            .HasOne(u => u.UserAuth)                                   // User - UserAuth , 1-1 , 
             .WithOne (ua  => ua.User)
             .HasForeignKey<UserAuthEntity>(ua => ua.Id);
+        
+        modelBuilder.Entity<UserEntity>()                              // User - Address , 1-n , 
+            .HasOne(u => u.Address)                                   // 
+            .WithMany(a => a.Users)
+            .HasForeignKey(u => u.AddressId);
+
+        modelBuilder.Entity<ProfileEntity>()                         // Profile - Role , 1-n , 
+            .HasOne(p => p.Role)                                    // 1 profile has 1 role
+            .WithMany(r => r.Profiles)                              // 1 role has many profiles
+            .HasForeignKey(p => p.RoleId);                          // FK RoleId 
+
+        modelBuilder.Entity<UserActivityEntity>()
+            .HasOne(ua => ua.User)
+            .WithOne(u => u.UserActivity)
+            .HasForeignKey<UserActivityEntity>(u => u.UserId);
+
+
+
 
 
     }
