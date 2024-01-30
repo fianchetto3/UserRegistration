@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,47 +11,82 @@ namespace UserRegApp.Services
 {
     internal class UserActivityService
     {
-        private readonly UserActivityRepository _useractivityRepositroy;
+        private readonly UserActivityRepository _userActivityRepository;
+        private readonly UserRepository _userRepository;
 
-        public UserActivityService(UserActivityRepository useractivityRepositroy)
+        public UserActivityService(UserActivityRepository userActivityRepository, UserRepository userRepository)
         {
-            _useractivityRepositroy = useractivityRepositroy;
-        }
-        public RoleEntity CreateRole(string lastLoggedIn)
-        {
-            var userActivityEntity = _useractivityRepositroy.Read(x => x.LastLoggedIn == lastLoggedIn);
-            roleEntity ??= _useractivityRepositroy.Create(new RoleEntity() { RoleName = roleName });
-            return roleEntity;
+            _userActivityRepository = userActivityRepository;
+            _userRepository = userRepository;
         }
 
-        public RoleEntity GetRoleByRoleName(string roleName)
+
+        public UserActivityEntity CreateActivity(int userId, DateTime lastLoggedIn)
         {
-            var roleEntity = _useractivityRepositroy.Read(x => x.RoleName == roleName);
-            return roleEntity;
+            var user = _userRepository.Read(x => x.Id == userId);
+            if (user == null)
+            {
+                
+                return null;
+            }
+
+            var userActivityEntity = _userActivityRepository.Create(new UserActivityEntity
+            {
+                UserId = userId,
+                LastLoggedIn = lastLoggedIn
+            });
+
+            return userActivityEntity;
         }
 
-        public RoleEntity GetRoleByRoleId(int id)
+
+
+        public UserActivityEntity GetActivityByTime(DateTime lastLoggedIn)
         {
-            var roleEntity = _useractivityRepositroy.Read(x => x.Id == id);
-            return roleEntity;
+            var userActivityEntity = _userActivityRepository.Read(x => x.LastLoggedIn == lastLoggedIn);
+            return userActivityEntity;
         }
 
-        public IEnumerable<RoleEntity> GetRoles()
+        public UserActivityEntity GetActivityById(int id)
         {
-            var roles = new List<RoleEntity>();
-            return roles;
+            var userActivity = _userActivityRepository.Read(x => x.Id == id);
+            return userActivity;
         }
 
-        public RoleEntity UpdateRole(RoleEntity roleEntity)
+        public IEnumerable<UserActivityEntity> GetAll()
         {
-            var updatedRoleEntity = _useractivityRepositroy.Update(x => x.Id == roleEntity.Id, roleEntity);
-            return updatedRoleEntity;
+            var activites = new List<UserActivityEntity>();
+            return activites;
         }
 
-        public void DeleteActivity(int id)
+        public UserActivityEntity UpdateActivity(UserActivityEntity userActivity )
         {
-            _useractivityRepositroy.Delete(x => x.Id == id);
+            try
+            {
+                var existingActivity = _userActivityRepository.Read(x => x.Id == userActivity.Id);
+                if (existingActivity == null)
+                {
+                    Console.WriteLine("Något gick fel vid uppdatering av Aktivitet");
+                    return null;
+                }
+                existingActivity.LastLoggedIn = userActivity.LastLoggedIn;
+                var updatedActivity = _userActivityRepository.Update(x => x.Id == existingActivity.Id, existingActivity);
+
+                return updatedActivity;
+
+            }
+            catch (Exception ex) { Debug.WriteLine(ex.Message); }
+            return null;
+            
+            
         }
+
+        public void DeleteRole(int id)
+        {
+            _userActivityRepository.Delete(x => x.Id == id);
+        }
+
+
 
     }
 }

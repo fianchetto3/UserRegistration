@@ -42,7 +42,7 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
             .WithOne (ua  => ua.User)
             .HasForeignKey<UserAuthEntity>(ua => ua.Id);
         
-        modelBuilder.Entity<UserEntity>()                              // User - Address , 1-n , 
+        modelBuilder.Entity<UserEntity>()                              // User - Address , n-1 , 
             .HasOne(u => u.Address)                                   // 
             .WithMany(a => a.Users)
             .HasForeignKey(u => u.AddressId);
