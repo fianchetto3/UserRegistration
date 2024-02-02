@@ -27,16 +27,20 @@ namespace UserRegApp.Services
             if (user == null)
             {
                 
-                return null;
+                return null!;
             }
-
-            var userActivityEntity = _userActivityRepository.Create(new UserActivityEntity
+            else
             {
-                UserId = userId,
-                LastLoggedIn = lastLoggedIn
-            });
+                var userActivityEntity = _userActivityRepository.Create(new UserActivityEntity
+                {
+                    UserId = userId,
+                    LastLoggedIn = lastLoggedIn
+                });
 
-            return userActivityEntity;
+                return userActivityEntity;
+
+            }
+ 
         }
 
 
@@ -67,7 +71,7 @@ namespace UserRegApp.Services
                 if (existingActivity == null)
                 {
                     Console.WriteLine("Något gick fel vid uppdatering av Aktivitet");
-                    return null;
+                    return null!;
                 }
                 existingActivity.LastLoggedIn = userActivity.LastLoggedIn;
                 var updatedActivity = _userActivityRepository.Update(x => x.Id == existingActivity.Id, existingActivity);
@@ -76,7 +80,7 @@ namespace UserRegApp.Services
 
             }
             catch (Exception ex) { Debug.WriteLine(ex.Message); }
-            return null;
+            return null!;
             
             
         }
