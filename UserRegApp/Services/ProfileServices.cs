@@ -23,23 +23,80 @@ namespace UserRegApp.Services
 
         public ProfileEntity CreateProfile(string FirstName, string LastName, string RoleName,string email, string phone, int addressid)
         {
-            var roleEntity = _roleService.CreateRole(RoleName);
-            var userEntity = _userService.CreateUser(email, phone, addressid);
-
-            var profileEntity = new ProfileEntity
+            try
             {
-                FirstName = FirstName,
-                LastName = LastName,
-                RoleId = roleEntity.Id,
-                User = userEntity 
-                
-            };
-            
-            userEntity.Profile = profileEntity;
+                var roleEntity = _roleService.CreateRole(RoleName);
+                var userEntity = _userService.CreateUser(email, phone, addressid);
 
+                var profileEntity = new ProfileEntity
+                {
+                    FirstName = FirstName,
+                    LastName = LastName,
+                    RoleId = roleEntity.Id,
+                    User = userEntity
+
+                };
+
+                userEntity.Profile = profileEntity;
+
+                return profileEntity;
+
+            }
+            catch { }
+            return null!;
+
+
+        }
+        public ProfileEntity GetProfileByFirstName (string FirstName)
+        {
+            try
+            {
+                var profileEntity = _profileRepository.Read(x => x.FirstName == FirstName);
+                return profileEntity;
+
+            }
+            catch { }
+            return null!;
+        }
+
+        public ProfileEntity GetProfileByLastName (string LastName)
+        {
+            try
+            {
+                var profileEntity = _profileRepository.Read(x => x.LastName == LastName);
+                return profileEntity;
+   
+            }
+            catch { }
+            return null!;
+
+        }
+
+
+        public ProfileEntity GetProfileById(int id)
+        {
+            var profileEntity = _profileRepository.Read(x => x.Id == id);
             return profileEntity;
-        } 
-            
+        }
+
+        public IEnumerable<ProfileEntity> GetProfiles()
+        {
+            var profiles = new List<ProfileEntity>();   
+            return profiles;
+        }
+
+        public ProfileEntity UpdateProfile(ProfileEntity profileEntity)
+        {
+            var updateProfile = _profileRepository.Update(x => x.Id == profileEntity.Id, profileEntity);
+            return updateProfile;
+        }
+
+        public void DeleteProfile (int id)
+        {
+            _profileRepository.Delete(x => x.Id == id);
+        }
 
     }
 }
+
+
