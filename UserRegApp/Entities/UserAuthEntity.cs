@@ -13,7 +13,7 @@ public class UserAuthEntity
 
     [Required]
     [Column(TypeName = "varchar(200)")]
-    public string Password { get; set; } = null!;
+    public string? Password { get; set; }
 
     // navigation Properties 
 

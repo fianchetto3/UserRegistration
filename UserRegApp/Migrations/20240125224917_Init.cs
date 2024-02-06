@@ -111,7 +111,7 @@ namespace UserRegApp.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false),
-                    Password = table.Column<string>(type: "varchar(200)", nullable: false)
+                    Password = table.Column<string>(type: "varchar(200)", nullable: true)
                 },
                 constraints: table =>
                 {
