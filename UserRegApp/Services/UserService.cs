@@ -21,11 +21,11 @@ namespace UserRegApp.Services
             _addressService = addressService;
         }
 
-        public UserEntity CreateUser(string email , string phone, int addressId )
+        public UserEntity CreateUser(string email , string phone, string city, string postalcode, string street)
         {
             try
             {
-                var addressEntity = _addressService.GetAddressbyId(addressId);
+                var addressEntity = _addressService.CreateAddress(street, postalcode, city);
                 var userEntity = _userRepository.Read(x => x.Email == email && x.Phone == phone);
                 userEntity ??= _userRepository.Create(new UserEntity() { Email = email, Phone = phone });
                 return userEntity;

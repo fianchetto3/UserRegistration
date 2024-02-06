@@ -21,12 +21,12 @@ namespace UserRegApp.Services
             _roleService = roleService;
         }
 
-        public ProfileEntity CreateProfile(string FirstName, string LastName, string RoleName,string email, string phone, int addressid)
+        public ProfileEntity CreateProfile(string FirstName, string LastName, string RoleName,string email, string phone, string city, string postalcode, string street)
         {
             try
             {
                 var roleEntity = _roleService.CreateRole(RoleName);
-                var userEntity = _userService.CreateUser(email, phone, addressid);
+                var userEntity = _userService.CreateUser(email, phone, city, postalcode, street);
 
                 var profileEntity = new ProfileEntity
                 {
