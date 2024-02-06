@@ -49,6 +49,20 @@ internal class UI
 
 
         var userResult = _userService.CreateUser(Email!, Phone!, city!, postalcode!, street!); _profileServices.CreateProfile(FirstName, LastName, RoleName, Email, Phone, city, postalcode, street);
+        if(userResult != null)
+        {
+            Console.Clear();
+            Console.WriteLine("User was created...");
+            Console.ReadKey();
+
+        }
+        else
+        {
+            Console.Clear();
+            Console.WriteLine("Something went wrong...");
+            Console.ReadKey();
+        }
+      
 
        
     }

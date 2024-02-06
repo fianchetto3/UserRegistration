@@ -1,13 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using UserRegApp;
 using UserRegApp.Context;
 using UserRegApp.Repositories;
 using UserRegApp.Services;
 
 
-var builder = Host.CreateDefaultBuilder();
-builder.ConfigureServices(services =>
+
+var builder = Host.CreateDefaultBuilder().ConfigureServices(services =>
 {
 
     services.AddDbContext<DataContext>(x => x.UseSqlServer(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Projects\UserRegistrationSolution\UserRegApp\Data\local_database.mdf;Integrated Security=True;Connect Timeout=30"));
@@ -26,8 +27,9 @@ builder.ConfigureServices(services =>
     services.AddScoped<AddressService>();
     services.AddScoped<ProfileServices>();
 
+    services.AddSingleton<UI>();
 
+}) .Build();
 
-});
-
-builder.Build();
+var ui = builder.Services.GetRequiredService<UI>();
+ui.CreateUser_UI();
