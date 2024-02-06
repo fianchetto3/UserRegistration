@@ -7,7 +7,7 @@ namespace UserRegApp.Entities;
 public class UserAuthEntity
 {
     [Key]
-    [ForeignKey(nameof(UserEntity))]
+    
     public int Id { get; set; }
 
 

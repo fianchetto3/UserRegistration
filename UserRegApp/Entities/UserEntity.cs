@@ -19,7 +19,7 @@ public class UserEntity
     public string Phone { get; set; } = null!;
 
     [Required]
-    [ForeignKey(nameof(AddressEntity))]
+   
     public int AddressId { get; set; }
 
     // Navigation prorperties 

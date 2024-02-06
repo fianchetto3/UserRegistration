@@ -25,9 +25,29 @@ namespace UserRegApp.Services
         {
             try
             {
+                Debug.WriteLine("Creating Addres... ");
                 var addressEntity = _addressService.CreateAddress(street, postalcode, city);
-                var userEntity = _userRepository.Read(x => x.Email == email && x.Phone == phone);
-                userEntity ??= _userRepository.Create(new UserEntity() { Email = email, Phone = phone });
+                if (addressEntity == null)
+                {
+                    Debug.WriteLine("Failed To create Address.");
+                    return null!;
+                }
+
+                Debug.WriteLine("Creating User...");
+                var userEntity = _userRepository.Read(x => email == x.Email && x.Phone == phone);
+                if (userEntity == null)
+                {
+                    Debug.WriteLine("User Not found, Creating new User..");
+                    userEntity = _userRepository.Create(new UserEntity() { Email = email, Phone = phone, AddressId = addressEntity.Id });
+
+                }
+                else
+                {
+                    Debug.WriteLine("User Found. Updating Address...");
+                 
+                   
+                }
+                Debug.WriteLine("User Created Successfully.");
                 return userEntity;
 
             }
@@ -65,7 +85,9 @@ namespace UserRegApp.Services
             _userRepository.Delete(x => x.Id == id);
         }
 
-
-
+        internal UserEntity CreateUser(string email)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -7,10 +7,10 @@ namespace UserRegApp.Entities;
 public class ProfileEntity
 {
     [Key]
-    [ForeignKey(nameof(UserEntity))]
+    
     public int Id { get; set; }
 
-    [ForeignKey(nameof(RoleEntity))]
+    
     public int RoleId { get; set; }
     
 
