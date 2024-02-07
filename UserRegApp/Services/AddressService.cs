@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,17 +17,38 @@ namespace UserRegApp.Services
         {
             _addressRepository = addressRepository;
         }
-        public AddressEntity CreateAddress(string street, string postalCode, string city )
+        public AddressEntity CreateAddress(string Street, string postalCode, string City )
         {
-            var addressEntity = _addressRepository.Read(x => x.Street == street && x.PostalCode == postalCode && x.City == city);
-            addressEntity ??= _addressRepository.Create(new AddressEntity() { Street = street, PostalCode = postalCode, City = city });
-            return addressEntity;
+            try
+            {
+                var addressEntity = _addressRepository.Read(x => x.Street == Street && x.PostalCode == postalCode && x.City == City);
+
+                if (addressEntity == null)
+                {
+                    addressEntity = new AddressEntity() { Street = Street, PostalCode = postalCode, City = City };
+                    addressEntity = _addressRepository.Create(addressEntity);
+                }
+
+
+
+                return addressEntity;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                throw;
+            }
+
+
+
+          
+  
         }
 
 
-        public AddressEntity GetAddressByStreet(string street)
+        public AddressEntity GetAddressByStreet(string Street)
         {
-            var addressEntity = _addressRepository.Read(x => x.Street == street);
+            var addressEntity = _addressRepository.Read(x => x.Street == Street);
             return addressEntity;
         }
 
@@ -40,9 +62,9 @@ namespace UserRegApp.Services
             var addressEntity = _addressRepository.Read(x => x.PostalCode == postalCode);
             return addressEntity;
         }
-        public AddressEntity GetAddressByCity(string city)
+        public AddressEntity GetAddressByCity(string City)
         {
-            var addressEntity = _addressRepository.Read(x => x.City == city);
+            var addressEntity = _addressRepository.Read(x => x.City == City);
             return addressEntity;
         }
 

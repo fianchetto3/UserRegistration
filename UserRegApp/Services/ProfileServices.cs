@@ -26,26 +26,33 @@ namespace UserRegApp.Services
             try
             {
                 var roleEntity = _roleService.CreateRole(RoleName);
-                UserEntity userEntity = _userService.CreateUser(email);
+                var userEntity = _userService.CreateUser(email);
 
-                var profileEntity = new ProfileEntity
+                if (roleEntity != null && userEntity != null)
                 {
-                    FirstName = FirstName,
-                    LastName = LastName,
-                    RoleId = roleEntity.Id,
-                    Id = userEntity.Id
+                    var profileEntity = new ProfileEntity
+                    {
+                        FirstName = FirstName,
+                        LastName = LastName,
+                        RoleId = roleEntity.Id,
+                        Id = userEntity.Id
+                    };
 
-                };
+                    userEntity.Profile = profileEntity;
 
-                userEntity.Profile = profileEntity;
-
-                return profileEntity;
-
+                    return profileEntity;
+                }
+                else
+                {
+                    
+                    return null!;
+                }
             }
-            catch { }
-            return null!;
-
-
+            catch (Exception ex)
+            {
+             
+                return null!;
+            }
         }
         public ProfileEntity GetProfileByFirstName (string FirstName)
         {

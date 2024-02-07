@@ -8,6 +8,11 @@ namespace UserRegApp.Repositories
         public UserAuthRepository(DataContext context) : base(context)
         {
         }
+
+        internal void Update(UserAuthEntity userAuthEntity)
+        {
+            throw new NotImplementedException();
+        }
     }
 
 }

@@ -14,23 +14,40 @@ namespace UserRegApp.Services
     {
         private readonly UserRepository _userRepository;
         private readonly AddressService _addressService;
+        private readonly UserActivityService _userActivityService;
+        private readonly ProfileServices _profileServices;
 
-        public UserService(UserRepository userRepository, AddressService addressService)
+        public UserService(UserRepository userRepository, AddressService addressService, UserActivityService userActivityService, ProfileServices profileServices)
         {
             _userRepository = userRepository;
             _addressService = addressService;
+            _userActivityService = userActivityService;
+            _profileServices = profileServices;
         }
 
-        public UserEntity CreateUser(string email , string phone, string city, string postalcode, string street)
+        public UserEntity CreateUser(string email, string phone, string city, string postalcode, string street, string firstName, string lastName, string roleName)
         {
             try
             {
-                Debug.WriteLine("Creating Addres... ");
-                var addressEntity = _addressService.CreateAddress(street, postalcode, city);
+                Debug.WriteLine("Creating Address... ");
+                var addressEntity = _addressService.GetAddressByStreet(street);
                 if (addressEntity == null)
                 {
-                    Debug.WriteLine("Failed To create Address.");
-                    return null!;
+                    addressEntity = _addressService.GetAddressByPostalCode(postalcode);
+                    if (addressEntity == null)
+                    {
+                        addressEntity = _addressService.GetAddressByCity(city);
+                    }
+                }
+                if (addressEntity == null)
+                {
+                    Debug.WriteLine("Failed to find existing address. Creating new address...");
+                    addressEntity = _addressService.CreateAddress(street, postalcode, city);
+                    if (addressEntity == null)
+                    {
+                        Debug.WriteLine("Failed to create address.");
+                        return null;
+                    }
                 }
 
                 Debug.WriteLine("Creating User...");
@@ -38,22 +55,33 @@ namespace UserRegApp.Services
                 if (userEntity == null)
                 {
                     Debug.WriteLine("User Not found, Creating new User..");
-                    userEntity = _userRepository.Create(new UserEntity() { Email = email, Phone = phone, AddressId = addressEntity.Id });
+                    userEntity = new UserEntity() { Email = email, Phone = phone, AddressId = addressEntity.Id };
+                    userEntity = _userRepository.Create(userEntity);
 
+                    // Create profile for the user using ProfileService
+                    var profileEntity = _profileServices.CreateProfile(firstName, lastName, roleName, email);
+                    userEntity.Profile = profileEntity;
                 }
                 else
                 {
                     Debug.WriteLine("User Found. Updating Address...");
-                 
-                   
+                    userEntity.AddressId = addressEntity.Id;
+                    userEntity = _userRepository.Update(userEntity);
                 }
+
+                if (userEntity != null)
+                {
+                    var userActivityEntity = _userActivityService.CreateActivity(userEntity.Id, DateTime.Now);
+                }
+
                 Debug.WriteLine("User Created Successfully.");
                 return userEntity;
-
             }
-            catch (Exception ex) { Debug.WriteLine(ex.Message);}
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
             return null!;
-         
         }
 
         public UserEntity GetUserByEmail (string email)

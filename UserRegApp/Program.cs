@@ -26,6 +26,7 @@ var builder = Host.CreateDefaultBuilder().ConfigureServices(services =>
     services.AddScoped<UserActivityService>();
     services.AddScoped<AddressService>();
     services.AddScoped<ProfileServices>();
+    services.AddScoped<PasswordHasher>();
 
     services.AddSingleton<UI>();
 

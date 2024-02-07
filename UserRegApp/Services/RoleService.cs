@@ -17,16 +17,16 @@ namespace UserRegApp.Services
             _roleRepository = roleRepository;
         }
 
-        public RoleEntity CreateRole(string roleName)         
+        public RoleEntity CreateRole(string RoleName)         
         {
-            var roleEntity = _roleRepository.Read(x => x.RoleName == roleName);
-            roleEntity ??= _roleRepository.Create(new RoleEntity() { RoleName = roleName });
+            var roleEntity = _roleRepository.Read(x => x.RoleName == RoleName);
+            roleEntity ??= _roleRepository.Create(new RoleEntity() { RoleName = RoleName });
             return roleEntity;
         }
 
-        public RoleEntity GetRoleByRoleName (string roleName)
+        public RoleEntity GetRoleByRoleName (string RoleName)
         {
-            var roleEntity = _roleRepository.Read(x => x.RoleName == roleName);
+            var roleEntity = _roleRepository.Read(x => x.RoleName == RoleName);
             return roleEntity;
         }
 

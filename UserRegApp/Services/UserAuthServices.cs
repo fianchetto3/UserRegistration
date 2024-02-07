@@ -23,40 +23,45 @@ namespace UserRegApp.Services
             _userService = userService;
         }
 
-        public UserAuthEntity CreatePassword (int userId, string password)
+        public UserAuthEntity CreatePassword (string email,  string password)
         {
             try
             {
-                var user = _userService.GetUserByUserId (userId);
+                var user = _userService.GetUserByEmail(email);
 
                 if (user == null)
                 {
                     Debug.WriteLine("Användaren hittades inte");
                     return null!;
                 }
+
                 
                 string hashedPassword = PasswordHasher.HashPassword(password);
 
+                var userAuthEntity = _userauthRepository.Read(x => x.Id == user.Id);
 
-                var userAuthEntity = _userauthRepository.Read(x => x.Id == userId);
                 if (userAuthEntity == null)
                 {
                     userAuthEntity = _userauthRepository.Create(new UserAuthEntity()
                     {
-                        Id = userId,
-                        Password= hashedPassword
+                        Id = user.Id,
+                        Password = hashedPassword
                     });
-
                 }
- 
+                else
+                {
+                    userAuthEntity.Password = hashedPassword;
+                    _userauthRepository.Update(userAuthEntity);
+                }
+
                 return userAuthEntity;
-
             }
-            catch (Exception ex) { Debug.WriteLine(ex.Message); }
-            return null!;
-
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                return null!;
+            }
         }
-
         public UserAuthEntity GetPasswordById (int id)
         {
             var userAuthEntity = _userauthRepository.Read(x => x.Id == id);
