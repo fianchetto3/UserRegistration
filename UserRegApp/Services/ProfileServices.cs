@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,49 +13,53 @@ namespace UserRegApp.Services
     internal class ProfileServices
     {
         private readonly ProfileRepository _profileRepository;
-        private readonly UserService _userService;
-        private readonly RoleService _roleService;
+        private readonly UserRepository _userRepository;
+        private readonly RoleRepository _roleRepository;
 
-        public ProfileServices(ProfileRepository profileRepository, UserService userService, RoleService roleService)
+        public ProfileServices(ProfileRepository profileRepository, UserRepository userRepository, RoleRepository roleRepository)
         {
             _profileRepository = profileRepository;
-            _userService = userService;
-            _roleService = roleService;
+            _userRepository = userRepository;
+            _roleRepository = roleRepository;
         }
 
-        public ProfileEntity CreateProfile(string FirstName, string LastName, string RoleName,string email )
+        public ProfileEntity CreateProfile(string firstName, string lastName, string roleName)
         {
             try
             {
-                var roleEntity = _roleService.CreateRole(RoleName);
-                var userEntity = _userService.CreateUser(email);
+                var roleEntity = _roleRepository.Read(x => x.RoleName == roleName);
 
-                if (roleEntity != null && userEntity != null)
+                if (roleEntity == null)
                 {
-                    var profileEntity = new ProfileEntity
+                    Debug.WriteLine($"Role '{roleName}' does not exist.");
+                    return null;
+                }
+
+                var profileEntity = _profileRepository.Read(x => x.FirstName == firstName && x.LastName == lastName);
+
+                if (profileEntity == null)
+                {
+                    profileEntity = new ProfileEntity
                     {
-                        FirstName = FirstName,
-                        LastName = LastName,
-                        RoleId = roleEntity.Id,
-                        Id = userEntity.Id
+                        FirstName = firstName,
+                        LastName = lastName,
+                        RoleId = roleEntity.Id
                     };
 
-                    userEntity.Profile = profileEntity;
-
+                    profileEntity = _profileRepository.Create(profileEntity);
                     return profileEntity;
                 }
-                else
-                {
-                    
-                    return null!;
-                }
+
+                Debug.WriteLine("Profile already exists.");
+                return profileEntity;
             }
             catch (Exception ex)
             {
-             
-                return null!;
+                Debug.WriteLine(ex.Message);
+                throw;
             }
         }
+
         public ProfileEntity GetProfileByFirstName (string FirstName)
         {
             try
@@ -102,6 +108,7 @@ namespace UserRegApp.Services
         {
             _profileRepository.Delete(x => x.Id == id);
         }
+
 
     }
 }

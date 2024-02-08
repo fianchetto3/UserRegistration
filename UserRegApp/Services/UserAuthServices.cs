@@ -84,5 +84,6 @@ namespace UserRegApp.Services
         {
             _userauthRepository.Delete(x => x.Id == id);
         }
+
     }
 }

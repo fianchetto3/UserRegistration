@@ -53,18 +53,26 @@ internal class UI
         Console.Write("LastName:  ");
         var LastName = Console.ReadLine()!;
 
+        Console.Write("Password:   ");
+        var password = Console.ReadLine()!;
 
 
 
-     
 
 
-        var userResult = _userService.CreateUser(Email, Phone, City, postalCode, Street, FirstName, LastName, RoleName );
+
+
+        var userResult = _userService.CreateUser(Email, Phone, City, postalCode, Street, FirstName,LastName);
         
-        var addressResult =  _addressService.CreateAddress(Street , City, postalCode);
+        
+        var addressResult =  _addressService.CreateAddress(Street ,postalCode , City);
+        var ProfileResutl = _profileServices.CreateProfile(FirstName,LastName, RoleName);
         var roleResult = _roleService.CreateRole(RoleName);
+        var passwordResult = _userAuthServices.CreatePassword(Email,password);
 
-        if (userResult != null && addressResult != null)
+
+
+        if (userResult != null && roleResult !=null &&  ProfileResutl != null && addressResult != null)
         {
             Console.Clear();
             Console.WriteLine("User was Created");

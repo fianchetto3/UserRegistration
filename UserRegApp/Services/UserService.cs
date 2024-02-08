@@ -25,7 +25,7 @@ namespace UserRegApp.Services
             _profileServices = profileServices;
         }
 
-        public UserEntity CreateUser(string email, string phone, string city, string postalcode, string street, string firstName, string lastName, string roleName)
+        public UserEntity CreateUser(string email, string phone, string city, string postalcode, string street, string FirstName, string LastName)
         {
             try
             {
@@ -46,9 +46,13 @@ namespace UserRegApp.Services
                     if (addressEntity == null)
                     {
                         Debug.WriteLine("Failed to create address.");
-                        return null;
+                        return null!;
                     }
                 }
+
+        
+
+
 
                 Debug.WriteLine("Creating User...");
                 var userEntity = _userRepository.Read(x => email == x.Email && x.Phone == phone);
@@ -57,10 +61,6 @@ namespace UserRegApp.Services
                     Debug.WriteLine("User Not found, Creating new User..");
                     userEntity = new UserEntity() { Email = email, Phone = phone, AddressId = addressEntity.Id };
                     userEntity = _userRepository.Create(userEntity);
-
-                    // Create profile for the user using ProfileService
-                    var profileEntity = _profileServices.CreateProfile(firstName, lastName, roleName, email);
-                    userEntity.Profile = profileEntity;
                 }
                 else
                 {
@@ -72,10 +72,11 @@ namespace UserRegApp.Services
                 if (userEntity != null)
                 {
                     var userActivityEntity = _userActivityService.CreateActivity(userEntity.Id, DateTime.Now);
+                   
                 }
 
                 Debug.WriteLine("User Created Successfully.");
-                return userEntity;
+                return userEntity!;
             }
             catch (Exception ex)
             {
@@ -113,9 +114,6 @@ namespace UserRegApp.Services
             _userRepository.Delete(x => x.Id == id);
         }
 
-        internal UserEntity CreateUser(string email)
-        {
-            throw new NotImplementedException();
-        }
+
     }
 }

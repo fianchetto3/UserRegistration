@@ -24,17 +24,17 @@ namespace UserRegApp.Services
             return roleEntity;
         }
 
-        public RoleEntity GetRoleByRoleName (string RoleName)
+        public RoleEntity GetRoleByName(string roleName)
         {
-            var roleEntity = _roleRepository.Read(x => x.RoleName == RoleName);
-            return roleEntity;
+            
+            return _roleRepository.Read(role => role.RoleName == roleName);
         }
-
         public RoleEntity GetRoleByRoleId(int id)
         {
             var roleEntity = _roleRepository.Read(x => x.Id == id);
             return roleEntity;
         }
+
 
         public IEnumerable<RoleEntity> GetRoles() 
         {
