@@ -87,8 +87,14 @@ namespace UserRegApp.Services
 
         public UserEntity GetUserByEmail (string email)
         {
-            var userEntity = _userRepository.Read(x => x.Email == email);
-            return userEntity;
+            try
+            {
+                var userEntity = _userRepository.Read(x => x.Email == email);
+                return userEntity;
+
+            }
+            catch { }
+            return null!;
         }
 
         public UserEntity GetUserByUserId(int id)

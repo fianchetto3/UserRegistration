@@ -8,6 +8,10 @@ using System.Threading.Tasks;
 using UserRegApp.Entities;
 using UserRegApp.Repositories;
 
+        
+
+
+
 namespace UserRegApp.Services
 {
     internal class ProfileServices
@@ -15,6 +19,7 @@ namespace UserRegApp.Services
         private readonly ProfileRepository _profileRepository;
         private readonly UserRepository _userRepository;
         private readonly RoleRepository _roleRepository;
+        private readonly UserService _userService;
 
         public ProfileServices(ProfileRepository profileRepository, UserRepository userRepository, RoleRepository roleRepository)
         {
@@ -23,42 +28,28 @@ namespace UserRegApp.Services
             _roleRepository = roleRepository;
         }
 
-        public ProfileEntity CreateProfile(string firstName, string lastName, string roleName)
+        public ProfileEntity CreateProfile(string firstName, string lastName, string roleName, UserEntity user)
         {
-            try
+            var roleEntity = _roleRepository.Read(x => x.RoleName == roleName);
+
+            if (roleEntity == null)
             {
-                var roleEntity = _roleRepository.Read(x => x.RoleName == roleName);
-
-                if (roleEntity == null)
-                {
-                    Debug.WriteLine($"Role '{roleName}' does not exist.");
-                    return null;
-                }
-
-                var profileEntity = _profileRepository.Read(x => x.FirstName == firstName && x.LastName == lastName);
-
-                if (profileEntity == null)
-                {
-                    profileEntity = new ProfileEntity
-                    {
-                        FirstName = firstName,
-                        LastName = lastName,
-                        RoleId = roleEntity.Id
-                    };
-
-                    profileEntity = _profileRepository.Create(profileEntity);
-                    return profileEntity;
-                }
-
-                Debug.WriteLine("Profile already exists.");
-                return profileEntity;
+                Debug.WriteLine($"Role '{roleName}' does not exist.");
+                return null!;
             }
-            catch (Exception ex)
+
+            var profileEntity = new ProfileEntity
             {
-                Debug.WriteLine(ex.Message);
-                throw;
-            }
+                FirstName = firstName,
+                LastName = lastName,
+                RoleId = roleEntity.Id,
+                User = user 
+            };
+
+            profileEntity = _profileRepository.Create(profileEntity);
+            return profileEntity;
         }
+
 
         public ProfileEntity GetProfileByFirstName (string FirstName)
         {
